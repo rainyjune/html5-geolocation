@@ -102,10 +102,15 @@
           success: function (response) {
             console.log("3rd party response:", response);
             var lnglat = response.loc.split(",");
-            successCallback({
-              latitude: lnglat[0],
-              longitude: lnglat[1]
-            });
+            // Make sure both latitude and longitude are returned.
+            if (lnglat.length == 2) {
+              successCallback({
+                latitude: lnglat[0],
+                longitude: lnglat[1]
+              });
+            } else {
+              showErrorInfo(error);
+            }
           },
           error: function (err) {
             showErrorInfo(error);
