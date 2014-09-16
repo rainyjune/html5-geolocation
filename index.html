@@ -39,7 +39,10 @@
     <div id="mapDiv" style="width:800px; height:600px"></div>
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     <script>
-      window.onload = initAll;
+      //window.onload = initAll;
+      $(function () {
+        initAll();
+      })
       var tips;
       var startPosition;
       function initAll() {
@@ -76,7 +79,9 @@
       }
 
       function successCallback(position) {
-        console.log("Get user location successfully via HTML5 geolocation.");
+        if (position.coords) {
+          console.log("Get user location successfully via HTML5 geolocation.");
+        }
         hideLoading();
 
         startPosition = {};
