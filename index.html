@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>HTML5 GeoLocation</title>
+    <style>
+      .warn {
+        background-color: yellow;
+      }
+      #location-container {
+        display: none;
+        position: relative;
+      }
+      #loading {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: gray;
+        height: 100%;
+        width: 100%;
+        opacity: 0.8;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="warn" id="tips">Please enable JavaScript first.</div>
+    <div id="location-container">
+      <table>
+        <tr>
+          <td>Starting Location(lat, lon)</td>
+          <td><span id="startLat">&nbsp;</span>°, <span id="startLon">&nbsp;</span>°</td>
+        </tr>
+        <tr>
+          <td>Current Location(lat, lon)</td>
+          <td><span id="currentLat">&nbsp;</span>°, <span id="currentLon">&nbsp;</span>°</td>
+        </tr>
+      </table>
+      <div id="loading">
+        Loading...
+      </div>
+    </div>
+    <script>
+      window.onload = initAll;
+      var tips;
+      function initAll() {
+        tips = document.getElementById("tips");
+        hideTip();
+
+        if (navigator.geolocation) {
+          showGeoInfoContainer();
+          getCurrentPostion();
+        } else {
+          showTip("Geolocation is not supported for this browser yet.");
+        }
+      }
+
+      function showGeoInfoContainer() {
+        document.getElementById("location-container").style.display = "block";
+      }
+
+      function getCurrentPostion() {
+        navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+      }
+
+      function showLoading() {
+        document.getElementById("loading").style.display = "block";
+      }
+
+      function hideLoading() {
+        document.getElementById("loading").style.display = "none";
+      }
+
+      function successCallback(position) {
+        hideLoading();
+        document.getElementById("startLat").innerHTML = position.coords.latitude;
+        document.getElementById("startLon").innerHTML = position.coords.longitude;
+      }
+
+      function errorCallback(error) {
+        hideLoading();
+        console.log("Error occured. Error code: ", error.code);
+      }
+
+      function showTip(message) {
+        tips.style.display = "block";
+        tips.innerHTML = message;
+      }
+      function hideTip() {
+        tips.style.display = "none";
+        tips.innerHTML = "";
+      }
+    </script>
+  </body>
+</html>
