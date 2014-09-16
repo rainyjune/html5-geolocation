@@ -37,6 +37,7 @@
       </div>
     </div>
     <div id="mapDiv" style="width:800px; height:600px"></div>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     <script>
       window.onload = initAll;
       var tips;
@@ -75,15 +76,43 @@
       }
 
       function successCallback(position) {
+        console.log("Get user location successfully via HTML5 geolocation.");
         hideLoading();
-        startPosition = position;
-        document.getElementById("startLat").innerHTML = position.coords.latitude;
-        document.getElementById("startLon").innerHTML = position.coords.longitude;
+
+        startPosition = {};
+        startPosition.latitude = position.coords && position.coords.latitude ? position.coords.latitude : position.latitude;
+        startPosition.longitude = position.coords && position.coords.longitude ? position.coords.longitude : position.longitude;
+        document.getElementById("startLat").innerHTML = startPosition.latitude;
+        document.getElementById("startLon").innerHTML = startPosition.longitude;
         showOnMap();
       }
 
       function errorCallback(error) {
-        hideLoading();
+        console.log("Failed to get user location via HTML5 geolocation.");
+        // Do you want to use a 3rd party services?
+        $.ajax({
+          type: "GET",
+          url: "http://ipinfo.io",
+          dataType: "jsonp",
+          success: function (response) {
+            console.log("3rd party response:", response);
+            var lnglat = response.loc.split(",");
+            successCallback({
+              latitude: lnglat[0],
+              longitude: lnglat[1]
+            });
+          },
+          error: function (err) {
+            showErrorInfo(error);
+          },
+          complete: function () {
+            hideLoading();
+          }
+        });
+        
+      }
+
+      function showErrorInfo(error) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
             showTip("User denied the request for Geolocation.");
@@ -123,7 +152,7 @@
       function initMap() {
         var map = new AMap.Map(mapDiv, {
           view: new AMap.View2D({
-            center: new AMap.LngLat(startPosition.coords.longitude, startPosition.coords.latitude),
+            center: new AMap.LngLat(startPosition.longitude, startPosition.latitude),
             zoom: 15
           })
         });
